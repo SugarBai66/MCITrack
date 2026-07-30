@@ -103,7 +103,7 @@ class Otb99_lang(BaseVideoDataset):
 
     def _read_bb_anno(self, seq_path):
         bb_anno_file = os.path.join(seq_path, "groundtruth_rect.txt")
-        gt = pandas.read_csv(bb_anno_file, delimiter=",|\s+", header=None, dtype=np.float32, na_filter=False,
+        gt = pandas.read_csv(bb_anno_file, delimiter=",|\\s+", header=None, dtype=np.float32, na_filter=False,
                              engine='python').values
         return torch.tensor(gt)
 

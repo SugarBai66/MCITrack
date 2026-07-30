@@ -14,7 +14,7 @@ import warnings
 import math
 import torch
 import torch.nn as nn
-from timm.models.registry import register_model
+from timm.models import register_model
 import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 from timm.models.layers import to_2tuple, drop_path, trunc_normal_

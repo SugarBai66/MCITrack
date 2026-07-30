@@ -1,5 +1,5 @@
 import os
-local_rank = os.environ['LOCAL_RANK']
+local_rank = int(os.environ.get('LOCAL_RANK', -1))
 # local_rank = -1
 import sys
 import argparse
@@ -78,6 +78,8 @@ def run_training(script_name, config_name, cudnn_benchmark=True, local_rank=-1, 
 
 
 def main():
+
+
     parser = argparse.ArgumentParser(description='Run a train scripts in train_settings.')
     parser.add_argument('--script', type=str, required=True, help='Name of the train script.')
     parser.add_argument('--config', type=str, required=True, help="Name of the config file.")
@@ -100,7 +102,7 @@ def main():
         dist.init_process_group(backend='nccl')
         torch.cuda.set_device(int(local_rank))
     else:
-        torch.cuda.set_device(1)
+        torch.cuda.set_device(0)
     run_training(args.script, args.config, cudnn_benchmark=args.cudnn_benchmark,
                  local_rank= int(local_rank), save_dir=args.save_dir, base_seed=args.seed,
                  use_lmdb=args.use_lmdb, script_name_prv=args.script_prv, config_name_prv=args.config_prv,

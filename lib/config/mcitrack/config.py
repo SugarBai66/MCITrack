@@ -51,6 +51,7 @@ cfg.TRAIN.PRINT_INTERVAL = 50 # interval to print the training log
 cfg.TRAIN.GRAD_CLIP_NORM = 0.1
 cfg.TRAIN.FIX_BN = False
 cfg.TRAIN.ENCODER_W = ""
+cfg.TRAIN.AMP = False   # 默认关闭 AMP
 # TRAIN.SCHEDULER
 cfg.TRAIN.SCHEDULER = edict()
 cfg.TRAIN.SCHEDULER.TYPE = "step"

@@ -28,7 +28,7 @@ def ltr_collate(batch):
             # If we're in a background process, concatenate directly into a
             # shared memory tensor to avoid an extra copy
             numel = sum([x.numel() for x in batch])
-            storage = batch[0].storage()._new_shared(numel)
+            storage = batch[0].untyped_storage()._new_shared(numel)
             out = batch[0].new(storage)
         return torch.stack(batch, 0, out=out)
         # if batch[0].dim() < 4:
@@ -74,20 +74,27 @@ def ltr_collate_stack1(batch):
     error_msg = "batch must contain tensors, numbers, dicts or lists; found {}"
     elem_type = type(batch[0])
     if isinstance(batch[0], torch.Tensor):
-        out = None
-        if _check_use_shared_memory():
+        # 检查所有张量形状是否一致
+        shapes = [b.shape for b in batch]
+        if len(set(shapes)) > 1:
+            raise RuntimeError(f"Batch tensors have inconsistent shapes: {shapes}")
+        # 不使用 out 参数，直接 stack（避免 resize 问题）
+        return torch.stack(batch, 1)
+        # out = None
+        # if _check_use_shared_memory():
             # If we're in a background process, concatenate directly into a
             # shared memory tensor to avoid an extra copy
-            numel = sum([x.numel() for x in batch])
-            storage = batch[0].storage()._new_shared(numel)
-            out = batch[0].new(storage)
+            # numel = sum([x.numel() for x in batch])
+            # storage = batch[0].untyped_storage()._new_shared(numel)
+            # out = batch[0].new(storage)
+            # 不使用 out 参数，直接 stack（避免 resize 问题）
             # len(batch)
             # 16
             # batch[0].shape
             # torch.Size([1, 3, 192, 192])
             # out.shape
             # torch.Size([1769472])
-        return torch.stack(batch, 1, out=out.resize_(0))
+        # return torch.stack(batch, 1, out=out.resize_(0))
             # out.shape
             # torch.Size([1, 16, 3, 192, 192])
         # if batch[0].dim() < 4:

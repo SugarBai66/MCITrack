@@ -6,8 +6,8 @@ from lib.train.admin import TensorboardWriter
 import torch
 import time
 from torch.utils.data.distributed import DistributedSampler
-from torch.cuda.amp import autocast
-from torch.cuda.amp import GradScaler
+from torch.amp import autocast
+from torch.amp import GradScaler
 import lib.utils.misc as misc
 
 
@@ -39,7 +39,7 @@ class LTRTrainer(BaseTrainer):
         self.settings = settings
         self.use_amp = use_amp
         if use_amp:
-            self.scaler = GradScaler()
+            self.scaler = GradScaler(device='cuda')
 
     def _set_default_settings(self):
         # Dict of all default values
@@ -75,7 +75,7 @@ class LTRTrainer(BaseTrainer):
             if not self.use_amp:
                 loss, stats = self.actor(data)
             else:
-                with autocast():
+                with autocast(device_type='cuda'):
                     loss, stats = self.actor(data)
 
             # backward pass and update weights
